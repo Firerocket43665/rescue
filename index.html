@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>夜阑资源站</title>
+    <style>
+        /* === 全局重置 & Android 4.4 扁平基调 === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #e8e8e8;  /* 浅灰底，典型4.4背景 */
+            color: #333;
+            line-height: 1.5;
+            padding-bottom: 70px; /* 底部导航留白 */
+        }
+
+        /* 状态栏模拟 (可选) */
+        .status-bar {
+            height: 24px;
+            background: #2d7b46; /* Holo 绿色调 */
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            color: white;
+            font-size: 13px;
+            font-weight: 400;
+        }
+        .status-bar span {
+            margin-right: auto;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 头部 */
+        .header {
+            background: #33b5e5;  /* Holo Blue Light */
+            padding: 16px 18px;
+            color: white;
+            border-bottom: 2px solid #1a9acf;
+        }
+        .header h1 {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+
+        /* 导航标签 (Android 4.4 风格 tabs) */
+        .nav-tabs {
+            display: flex;
+            background: #33b5e5;
+            padding: 0 4px 6px 4px;
+            gap: 2px;
+            border-bottom: 2px solid #1a9acf;
+        }
+        .nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #cceeff;
+            cursor: pointer;
+            transition: 0.15s;
+            border-radius: 2px 2px 0 0;
+            background: transparent;
+            border: none;
+            outline: none;
+            text-transform: uppercase;
+        }
+        .nav-tab.active {
+            background: #f5f5f5;
+            color: #33b5e5;
+            font-weight: 600;
+            box-shadow: 0 -2px 0 #fff inset;
+        }
+        .nav-tab:active {
+            opacity: 0.7;
+        }
+
+        /* 页面内容卡片区 */
+        .page-content {
+            padding: 16px 14px;
+            display: block;
+        }
+        .page {
+            display: none;
+        }
+        .page.active-page {
+            display: block;
+        }
+
+        /* 卡片 (扁平无阴影，仅分割线) */
+        .card {
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 2px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .card-title {
+            font-size: 17px;
+            font-weight: 500;
+            color: #222;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* 资源列表 —— 25项 */
+        .resource-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #efefef;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+        }
+        .resource-item:last-child {
+            border-bottom: none;
+        }
+        .res-name {
+            font-weight: 500;
+            color: #0099cc;
+            width: 40%;
+            font-size: 15px;
+        }
+        .res-desc {
+            width: 35%;
+            font-size: 13px;
+            color: #555;
+            padding-left: 4px;
+        }
+        .res-link {
+            width: 25%;
+            text-align: right;
+        }
+        .res-link a {
+            background: #33b5e5;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 2px;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+            border: 1px solid #2493c4;
+        }
+        .res-link a:active {
+            background: #1a9acf;
+        }
+
+        /* 广告位网格 */
+        .ad-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .ad-placeholder {
+            background: #ddd;
+            border: 2px dashed #aaa;
+            border-radius: 2px;
+            padding: 28px 8px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            font-weight: 400;
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .ad-placeholder strong {
+            font-weight: 600;
+            color: #444;
+        }
+
+        /* 关于页 – 个人名片 */
+        .about-block {
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 2px;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+        .about-block h3 {
+            font-size: 16px;
+            font-weight: 500;
+            color: #2d7b46;
+            margin-bottom: 6px;
+        }
+        .about-block p {
+            font-size: 14px;
+            color: #3a3a3a;
+            margin: 6px 0;
+        }
+        .about-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 14px 0;
+        }
+
+        /* 底部固定导航 (Android 4.4 风格底栏) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: #2d2d2d;
+            display: flex;
+            border-top: 2px solid #1f1f1f;
+            z-index: 999;
+        }
+        .bottom-nav button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #ccc;
+            padding: 12px 0;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: 0.1s;
+            border-top: 2px solid transparent;
+            margin-top: -2px;
+            outline: none;
+        }
+        .bottom-nav button.active {
+            color: #33b5e5;
+            border-top-color: #33b5e5;
+            background: #383838;
+        }
+        .bottom-nav button:active {
+            background: #3f3f3f;
+        }
+
+        /* 辅助 */
+        .placeholder-note {
+            color: #888;
+            font-style: italic;
+            background: #fafafa;
+            padding: 4px 8px;
+            border-left: 3px solid #33b5e5;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+        .team-badge {
+            display: inline-block;
+            background: #99cc00;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .dev-name {
+            font-weight: 700;
+            color: #2d7b46;
+        }
+
+        /* 响应式微调 */
+        @media (max-width: 420px) {
+            .res-name { width: 38%; }
+            .res-desc { width: 32%; }
+            .res-link { width: 30%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="appContainer">
+    <!-- 模拟状态栏 (装饰) -->
+    <div class="status-bar">
+        <span>此资源站不建议桌面使用</span>
+        <span> </span>
+    </div>
+
+    <!-- 头部 -->
+    <div class="header">
+        <h1>🥬夜阑资源站</h1>
+        <p>提供移动端相关工具、页面资源与项目示例的静态资源索引。资源免费访问，部分下载通过直链或外部页面提供，无需网盘注册。当前下载交互仍在完善中</p>
+    </div>
+    
+    <!-- ===== 页面容器 ===== -->
+    <div class="page-content">
+
+        <!-- 首页 -->
+        <div id="page-home" class="page active-page">
+            <div class="card">
+                <div class="card-title">🏠 团队 · 介绍</div>
+                <p><strong>团队名称：</strong>夜阑工作室</span></p>
+                <p><strong>团队规模：</strong>招聘中，你愿意来吗？</span></p>
+                <p><strong>首席开发者：</strong>夜阑</span></p>
+                <p><strong>UI/UX：</strong> <span class="placeholder-note">AIGC</span></p>
+                <p><strong>后端支持：</strong> <span class="placeholder-note">Github Page</span></p>
+                <div style="margin-top: 12px; padding: 10px; background: #f0f9ff; border-radius: 2px;">
+                    <span class="team-badge">v1.0.0snapshot</span>
+                    <span style="margin-left: 10px; font-size: 13px;">本站由 <strong>AIGC</strong> 协助构建</span>
+                </div>
+                <p style="margin-top: 14px; color: #777; font-size: 13px;">上次更新于 2026-08-07</p>
+            </div>
+            <div class="card">
+                <div class="card-title">快速统计</div>
+                <p>收录资源：<strong>25+</strong>项<strong></strong></p>
+                <p>广告位：<strong>5</strong> 个 </p>
+            </div>
+        </div>
+
+        <!-- 资源页 (25项) -->
+        <div id="trash" class="page">
+            <div class="card">
+                <div class="card-title">📦 全部资源 · 25项</div>
+                <div id="resourceList"></div>
+                <p style="text-align:right; font-size:12px; color:#999; margin-top:8px;">* 文件不作为站主主观立场，请勿断章取义</p>
+            </div>
+        </div>
+        <!-- resources page -->
+<div class="page" id="page-resources">
+  <h2>资源列表</h2>
+  <p>您现在看到的是资源页面，此页面未完工，因为网站处于快照状态，敬请期待吧</p>
+
+  <ul class="resource-list">
+    <li>
+      <span class="res-name">资源示例 01：Android 工具包</span>
+      <a class="res-link" href="https://example.com/file01.zip" target="_blank" rel="noopener">下载</a>
+    </li>
+    <li>
+      <span class="res-name">资源示例 02：Windows 运行库合集</span>
+      <a class="res-link" href="https://example.com/file02.zip" target="_blank" rel="noopener">下载</a>
+    </li>
+    <li>
+      <span class="res-name">资源示例 03：MT 管理器主题包</span>
+      <a class="res-link" href="https://example.com/file03.zip" target="_blank" rel="noopener">下载</a>
+    </li>
+    <li>
+      <span class="res-name">资源示例 04：示例配置文件</span>
+      <a class="res-link" href="https://example.com/config.zip" target="_blank" rel="noopener">下载</a>
+    </li>
+    <li>
+      <span class="res-name">资源示例 05：移动端调试工具</span>
+      <a class="res-link" href="https://example.com/debug.apk" target="_blank" rel="noopener">下载</a>
+    </li>
+
+    <!-- 继续往下写，直到第 25 项 -->
+    <li>
+      <span class="res-name">资源示例 06：XXX 资源</span>
+      <a class="res-link" href="https://example.com/file06.zip" target="_blank" rel="noopener">下载</a>
+    </li>
+
+    <!-- …… 中间省略 07–24 …… -->
+
+    <li>
+      <span class="res-name">资源示例 25：预留资源位</span>
+      <a class="res-link" href="#" target="_blank" rel="noopener">敬请期待</a>
+    </li>
+  </ul>
+
+  <p class="note">
+    说明：本站仅提供资源索引与直链跳转，不存储资源本体。<br>
+    若链接失效或涉及版权问题，请通过联系方式反馈。
+  </p>
+</div>
+
+        <!-- 项目页（飞起，但是不能删） -->
+        <div id="page-projects" class="page">
+            <div class="card">
+                <div class="card-title">🚀 开源 / 内部项目（请勿点击此页，因为它尚未完工）</div>
+                <div class="resource-item"><span class="res-name">内容</span><span class="res-desc">A</span><span class="res-link"><a href="#">GitHub</a></span></div>
+                <div class="resource-item"><span class="res-name">FlatLauncher</span><span class="res-desc">4.4 启动器</span><span class="res-link"><a href="#">源码</a></span></div>
+                <div class="resource-item"><span class="res-name">ResHub Sync</span><span class="res-desc">资源同步工具</span><span class="res-link"><a href="#">APK</a></span></div>
+                <div class="resource-item"><span class="res-name">MaterialYouKit</span><span class="res-desc">兼容库</span><span class="res-link"><a href="#">文档</a></span></div>
+                <div class="resource-item"><span class="res-name">AdMgr Lite</span><span class="res-desc">广告管理演示</span><span class="res-link"><a href="#">Demo</a></span></div>
+                <div class="resource-item"><span class="res-name">WebDash</span><span class="res-desc">仪表盘模板</span><span class="res-link"><a href="#">预览</a></span></div>
+                <div style="padding: 12px 0 4px; color:#888; font-size:13px; border-top:1px solid #eee; margin-top:8px;">更多项目开发中…… </div>
+            </div>
+        </div>
+
+        <!-- 广告页 (5个广告位) -->
+        <div id="page-ads" class="page">
+            <div class="card">
+                <div class="card-title">📢 广告合作 - 五位嘉宾</div>
+                <div class="ad-grid">
+                    <div class="ad-placeholder"><strong>联系作者，加群1032973016，个人QQ3826334577，我的mc服务器也在那个群里，求求来玩吧</strong><br><span style="font-size:12px;">广告发布者：站主</span></div>
+                    <div class="ad-placeholder"><strong>广告位 #2</strong><br><span style="font-size:12px;">原生横幅</span></div>
+                    <div class="ad-placeholder"><strong>广告位 #3</strong><br><span style="font-size:12px;">插屏占位</span></div>
+                    <div class="ad-placeholder"><strong>广告位 #4</strong><br><span style="font-size:12px;">信息流样式</span></div>
+                    <div class="ad-placeholder" style="grid-column: span 2;"><strong>广告位 #5 (横幅宽版)</strong><br><span style="font-size:12px;">728x90 占位符</span></div>
+                </div>
+                <p style="margin-top:14px; font-size:13px; color:#777;">联系：<span class="placeholder-note">jxw_minecraft1@hotmail.com</span></p>
+            </div>
+        </div>
+
+        <!-- 关于页-->
+        <div id="page-about" class="page">
+            <div class="about-block">
+                <h3>关于本站</h3>
+                <p><strong>资源站名称：</strong>夜阑资源站</p>
+                <p><strong>版本：</strong> 1.0.0snapshot</p>
+                <p><strong>设计语言：</strong></p>
+                <div class="about-divider"></div>
+                <h3>关于「夜阑」</h3>
+                <p>我是 <span class="dev-name">夜阑</span>，喜欢搞搞技术，主要扎根在Github，有兴趣还请多看看哦（Github:Firerocket43665）
+                </p>
+                <p> </p>
+                <p style="background:#f5f5f5; padding:6px 10px; border-radius:2px; margin-top:8px;">✨我的主站：https://firerocket43665.github.io</p>
+                <div class="about-divider"></div>
+                <h3>📋团队成员</h3>
+                <p>招聘中，你愿意加入吗？请联系我</p>
+                <p>联系：<span class="placeholder-note">jxw_minecraft1@hotmail.com</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航 (五个按钮) -->
+    <div class="bottom-nav" id="bottomNav">
+        <button class="active" data-page="home">首页</button>
+        <button data-page="resources">资源</button>
+        <button data-page="ads">广告</button>
+        <button data-page="about">关于</button>
+    </div>
+</div>
+
+<a href="https://icp.gov.moe/?keyword=20268833" target="_blank">萌ICP备20268833号</a>
+
+<script>
+    (function() {
+        // ----- 1. 生成25项资源 (占位符) -----
+        const resourceList = document.getElementById('resourceList');
+        if (resourceList) {
+            const resources = [
+                "Android SDK 工具", "Gradle 插件", "Material Icons", "Retrofit 库", "Glide 图片加载",
+                "Room 数据库", "Navigation 组件", "WorkManager", "Hilt 依赖注入", "Compose BOM",
+                "OkHttp 网络库", "Coil 图片", "DataStore", "Paging 3", "CameraX",
+                "ML Kit 模型", "Firebase BoM", "ExoPlayer", "WebRTC 库", "TensorFlow Lite",
+                "Kotlin 协程", "Flutter 引擎", "React Native", "SwiftUI 桥接", "Jetpack Benchmark"
+            ];
+            let htmlStr = '';
+            resources.forEach((name, index) => {
+                const desc = `资源描述 ${index+1}：功能占位`;
+                const link = '#';
+                htmlStr += `
+                    <div class="resource-item">
+                        <span class="res-name">${name}</span>
+                        <span class="res-desc">${desc}</span>
+                        <span class="res-link"><a href="${link}" target="_blank">下载</a></span>
+                    </div>
+                `;
+            });
+            resourceList.innerHTML = htmlStr;
+        }
+
+        // ----- 2. Tab 切换逻辑 (顶部标签 + 底部导航联动) -----
+        const topTabs = document.querySelectorAll('.nav-tab');
+        const bottomBtns = document.querySelectorAll('.bottom-nav button');
+        const pages = {
+            home: document.getElementById('page-home'),
+            resources: document.getElementById('page-resources'),
+            projects: document.getElementById('page-projects'),
+            ads: document.getElementById('page-ads'),
+            about: document.getElementById('page-about')
+        };
+
+        function switchPage(pageId) {
+            // 隐藏所有页面
+            Object.keys(pages).forEach(key => {
+                if (pages[key]) pages[key].classList.remove('active-page');
+            });
+            // 显示选中页面
+            if (pages[pageId]) pages[pageId].classList.add('active-page');
+
+            // 更新顶部tab active
+            topTabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.page === pageId) tab.classList.add('active');
+            });
+            // 更新底部按钮 active
+            bottomBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.page === pageId) btn.classList.add('active');
+            });
+        }
+
+        // 绑定顶部tab点击
+        topTabs.forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                const page = this.dataset.page;
+                if (page) switchPage(page);
+            });
+        });
+
+        // 绑定底部按钮点击
+        bottomBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const page = this.dataset.page;
+                if (page) switchPage(page);
+            });
+        });
+
+        // 默认激活首页 (已经active)
+        // 额外处理：确保首页可见
+        switchPage('home');
+    })();
+</script>
+
+<!-- 注：所有占位符均用 [ ... ] 或灰色斜体标注，方便修改 -->
+</body>
+</html>
