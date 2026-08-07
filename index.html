@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lan's blog</title>
+<style>
+/-- 1. 现代复古变量定义 --- */
+:root {
+--bg-color: #F5F5F7;       /* 极浅灰背景，现代感基础 */
+--card-bg: #FFFFFF;        /* 纯白卡片 */
+--primary-color: #0066FF;  /* 现代科技蓝 */
+--text-primary: #1D1D1F;   /* 近黑色文字，高对比 */
+--text-secondary: #86868B; /* 次级灰色文字 */
+--shadow: 0 20px 40px rgba(0, 0, 0, 0.08); /* 弥散阴影 */
+--radius: 20px;            /* 大圆角 */
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    line-height: 1.6;
+}
+
+/* --- 2. 主容器：居中悬浮 --- */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 200px 1fr; /* 左侧窄导航，右侧宽内容 */
+    gap: 24px;
+    align-items: start;
+}
+
+/* --- 3. 侧边栏：毛玻璃质感 --- */
+.sidebar {
+    position: sticky;
+    top: 40px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px); /* 轻微毛玻璃效果 */
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* --- 4. 主内容区：瀑布流/卡片流 --- */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* 顶部搜索栏 */
+.search-bar {
+    background: var(--card-bg);
+    padding: 16px 24px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+    color: var(--text-primary);
+}
+
+.search-bar input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* 内容卡片 */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-8px); /* 悬浮上浮效果 */
+}
+
+.card-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #F2F2F2;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.card-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.card-body {
+    padding: 16px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-text {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.card-link {
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* 趣事页的特殊样式（小红书风） */
+.story-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    gap: 16px;
+}
+
+.story-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}
+
+.story-content h4 {
+    font-size: 15px;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.story-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+/* --- 5. 底部备案信息 --- */
+.footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* --- 响应式：适配手机 --- */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr; /* 手机端单列 */
+    }
+    .sidebar {
+        position: relative;
+        top: 0;
+    }
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+<head>
+<body>
+<div class="container">
+    <!-- 侧边栏导航 -->
+    <aside class="sidebar">
+        <div class="logo">夜阑的博客 Yelan's blog</div>
+        <ul class="nav-links">
+            <li><a href="#home" class="active" onclick="switchView('home')">🏠 Home</a></li>
+            <li><a href="#about" onclick="switchView('about')">💻  About me</a></li>
+            <li><a href="#sites" onclick="switchView('sites')">🔗  Other website</a></li>
+            <li><a href="#fun" onclick="switchView('fun')">🎉 Fun things</a></li>
+  
+        </ul>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 搜索栏 -->
+        <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" placeholder="搜索资源、笔记或梗...">
+        </div>
+
+        <!-- 1. 首页视图 -->
+        <div id="view-home" class="view active">
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🌟 欢迎来到 LanOS</div>
+                        <div class="card-subtitle">复古未来主义操作系统</div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">这是一个基于 Web 的模拟操作系统，融合了 Mac OS 9 的美学与现代化的交互体验。
+                        <a href="#" class="card-link">开发中，敬请期待...</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">💾 资源索引</div>
+                        <div class="card-subtitle">常用工具与素材</div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">收录了各种开源工具、壁纸包和开发文档，方便快速调用，当然这个网站不属于我，不过你可以看看，或许还不错的
+                        <a href="#" class="card-link"><strong>查看资源：d.icdown.club/doc/</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">⚙️ 系统设置</div>
+                        <div class="card-subtitle">个性化定制</div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">调整壁纸、主题颜色、时钟样式，打造属于你的专属桌面环境。
+                        <a href="#" class="card-link">开发中，敬请期待...</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 关于我 -->
+        <div id="view-about" class="view" style="display:none;">
+            <div class="card" style="padding: 30px;">
+                <h3 style="margin-bottom: 20px;">👨💻 关于我 (夜阑)</h3>
+                👋 你好！我是夜阑，一个热爱折腾前端技术和复古美学的开发者。
+                
+                🛠️ <strong>技能栈：</strong>折腾各种操作系统，如Android，Windows，Linux（我才学了一点点Linux）
+                🌐 <strong>兴趣：</strong>绘画（练习中，所以说我也没有接稿的能力），写垃圾网站，搜刮互联网上面的好物
+                
+                📫 <strong>联系方式：</strong>jxw_minecraft1@hotmail.com
+            </div>
+        </div>
+
+        <!-- 3. 我的其他站点 -->
+        <div id="view-sites" class="view" style="display:none;">
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🌐 夜阑资源站</div>
+                        <div class="card-subtitle">Yelan Resource Hub</div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">主要的内容发布平台，分享各类软件资源、脚本工具以及学习笔记。
+                        <a href="https://your-link-here.com" target="_blank" class="card-link">访问站点 →</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🎨 灵感画板</div>
+                        <div class="card-subtitle">Design Sketchbook</div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">存放日常的设计草图、UI Mockup 和像素画练习的地方，当然，此站不属于我
+                        <a href="https://your-link-here.com" target="_blank" class="card-link">访问站点 →</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📖 技术博客</div>
+                        <div class="card-subtitle">Tech Journey</div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">记录开发过程中的踩坑经历、算法题解以及读书笔记，人话说，它是Github，你懂的，在Github搜索firerocket43665找到我！
+                        <a href="https://github.com/" target="_blank" class="card-link">访问站点 →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 趣事 (小红书风格) -->
+        <div id="view-fun" class="view" style="display:none;">
+            <div class="story-card">
+                <div class="story-avatar">😭</div>
+                <div class="story-content">
+                    <h4>《买了个“迷你收纳盒”，到手是个戒指盒》</h4>
+                    上周刷购物软件，看见个“迷你桌面收纳盒”，详情页拍得挺大，配文“能装回形针、橡皮、耳机线”。下单的时候还想着“终于能把桌面的零碎理清楚了”，到手拆快递——好家伙，只有我拇指盖那么大，仔细看详情页里用来参照的“大物件”是一颗绿豆。我对着那个比硬币还小的盒子笑了十分钟，现在它正躺在我的抽屉里，装着半颗吃剩的薄荷糖
+                </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-avatar">🤓</div>
+                <div class="story-content">
+                    <h4>《囤的果冻放久了，变成了天然果冻干》</h4>
+                    上个月超市打折，扛了一箱黄桃果冻回家，塞柜子里忘了吃。今天翻东西翻出来，拆开一盒——里面的水分全蒸发了，剩下个半透明的、Q弹得像橡胶的果冻壳，捏起来还会回弹。我试着咬了一口，硌得牙酸，最后没舍得扔，当橡皮泥捏了半小时，捏了个歪歪扭扭的小鸭子，现在正摆在我的桌子旁边当摆件
+                </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-avatar">😇</div>
+                <div class="story-content">
+                    <h4>《点了份炸鸡，商家送了我半只烤鸭》</h4>
+                    上周熬夜做站饿了，点了份炸鸡备注“老板求赠品，没钱吃饭了”。半小时外卖到了，打开一看——炸鸡盒子里躺着半只切好的烤鸭，还附了张手写纸条：“小伙子我看你骨骼惊奇，这半只鸭是昨天的剩货，热热能吃，别饿死在出租屋。”我感动得当场啃了半只鸭，第二天拉肚子拉到脱水，现在看见烤鸭就想起那天的“生死之交”
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 关于本站 -->
+        <div id="view-site-info" class="view" style="display:none;">
+            <div class="card" style="padding: 30px;">
+                <h3 style="margin-bottom: 20px;">ℹ️ 关于 LanOS 频道</h3>
+                <p style="margin-bottom: 12px;"><strong>🏗️ 架构：</strong> 纯 HTML 单文件实现，无任何外部依赖。内置 2MB 高清壁纸支持，运行在 CMD Ryzen 114514F 模拟环境中。
+                <p style="margin-bottom: 12px;"><strong>🎨 设计：</strong> 致敬 Mac OS 9 的经典美学，融合现代化的大圆角、弥散阴影与毛玻璃特效。
+                <p style="margin-bottom: 12px;"><strong>🥚 彩蛋：</strong> 系统内嵌 BTX9090 显卡驱动、NBDDR 888TB 内存配置、萌 ICP 备 20268833 号等趣味元素。
+                <p style="margin-bottom: 12px;"><strong>📱 适配：</strong> 针对高缩放比例（如 175%）进行优化，字体清晰，交互流畅。
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- 底部 -->
+<div class="footer">
+<p>萌国备案信息：</p>  <a href="https://icp.gov.moe/?keyword=20268833" target="_blank">萌ICP备20268833号</a>| © 2026 Yelan Channel. All rights reserved (or not).
+</div>
+
+
+<script>
+    // 简单的视图切换逻辑
+    function switchView(viewId) {
+        // 隐藏所有视图
+        document.querySelectorAll('.view').forEach(el => el.style.display = 'none');
+        
+        // 移除所有导航的 active 状态
+        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
+        // 显示目标视图
+        document.getElementById(`view-${viewId}`).style.display = 'block';
+
+        // 添加当前导航的 active 状态
+        event.target.classList.add('active');
+
+        // 滚动到顶部
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 默认显示首页
+    document.addEventListener('DOMContentLoaded', () => {
+        switchView('home');
+    });
+    
+</script>
+<body>
+<html>
